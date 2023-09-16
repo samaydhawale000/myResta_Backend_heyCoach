@@ -5,13 +5,10 @@ const authMiddleware = require("../middleware/authMiddleware");
 const restaRoute = express.Router();
 var jwt = require("jsonwebtoken");
 
-
 restaRoute.post("/add", restaMiddleware, async (req, res) => {
   try {
-    
-      await restaModel.create({ ...req.body, userID: decoded.userID });
-      res.status(201).json({ status: "Success", data: req.body });
-    
+    await restaModel.create({ ...req.body });
+    res.status(201).json({ status: "Success", data: req.body });
   } catch (err) {
     res.json({ status: "fail", message: err.message });
   }
@@ -21,8 +18,8 @@ restaRoute.post("/add", restaMiddleware, async (req, res) => {
 
 restaRoute.get("/", async (req, res) => {
   try {
-      let data = await restaModel.find({ userID: decoded.userID });
-      res.status(201).json({ status: "Success", data: data });
+    let data = await restaModel.find();
+    res.status(201).json({ status: "Success", data: data });
   } catch (err) {
     res.json({ status: "fail", message: err.message });
   }
