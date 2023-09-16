@@ -4,6 +4,8 @@ const userRoute = require("./routes/userRoute");
 const app = express();
 const bcrypt = require("bcrypt");
 const restaRoute = require("./routes/restaRoute");
+var cors = require("cors");
+app.use(cors());
 
 app.use(express.json());
 
