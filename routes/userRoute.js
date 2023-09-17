@@ -6,20 +6,21 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const loginMiddleware = require("../middleware/loginMiddleware");
-const con = require("../db");
+const pool = require("../db");
 
 userRoute.post("/", userMiddleware, (req, res) => {
-  con.connect((err) => {
+  pool.getConnection((err, connection) => {
     if (err) {
-      con.log("error from DB connection", err);
+      console.log("error from DB connection", err);
     }
     console.log("DB connected");
 
     let sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    con.query(
+    connection.query(
       sql,
       [req.body.username, req.body.email, req.body.password],
       (err, result) => {
+        connection.release();
         if (err) {
           res.json({ error: err.message });
         }
@@ -30,7 +31,7 @@ userRoute.post("/", userMiddleware, (req, res) => {
 });
 
 userRoute.post("/login", loginMiddleware, (req, res) => {
-  con.connect((err) => {
+  pool.getConnection((err, connection) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -38,7 +39,8 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
 
     let sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
 
-    con.query(sql, [req.body.email], (err, result) => {
+    connection.query(sql, [req.body.email], (err, result) => {
+      connection.release();
       if (err) {
         res.json({ error: err.message });
       }
@@ -50,14 +52,14 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
           res.json({ status: "Wrong Password" });
         }
       } else {
-        res.json({ status: "Wrong Information" });
+        res.json({ status: "Wrong Email" });
       }
     });
   });
 });
 
 userRoute.get("/", async (req, res) => {
-  con.connect((err) => {
+  pool.getConnection((err, connection) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -65,7 +67,9 @@ userRoute.get("/", async (req, res) => {
 
     let sql = "SELECT * FROM users";
 
-    con.query(sql, (err, result) => {
+    connection.query(sql, (err, result) => {
+      connection.release();
+
       if (err) {
         res.json({ error: err.message });
       }
