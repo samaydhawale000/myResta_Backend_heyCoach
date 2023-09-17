@@ -26,6 +26,7 @@ userRoute.post("/", userMiddleware, (req, res) => {
         res.json({ status: "Success", data: "User Register successfully" });
       }
     );
+    con.end();
   });
 });
 
@@ -53,6 +54,7 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
         res.json({ status: "Wrong Email" });
       }
     });
+    con.end();
   });
 });
 
@@ -71,6 +73,7 @@ userRoute.get("/", async (req, res) => {
       }
       res.json({ status: "Success", data: result });
     });
+    con.end();
   });
 });
 
