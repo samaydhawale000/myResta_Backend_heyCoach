@@ -7,31 +7,32 @@ const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const loginMiddleware = require("../middleware/loginMiddleware");
 const con = require("../db");
+const newCon = require("../db");
 
 userRoute.post("/", userMiddleware, (req, res) => {
-  con.connect((err) => {
+  newCon.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
     console.log("DB connected");
 
     let sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    con.query(
+    newCon.query(
       sql,
       [req.body.username, req.body.email, req.body.password],
       (err, result) => {
         if (err) {
           res.json({ error: err.message });
+        } else {
+          res.json({ status: "Success", data: "User Register successfully" });
         }
-        res.json({ status: "Success", data: "User Register successfully" });
       }
     );
-    con.end();
   });
 });
 
 userRoute.post("/login", loginMiddleware, (req, res) => {
-  con.connect((err) => {
+  newCon.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -39,7 +40,7 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
 
     let sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
 
-    con.query(sql, [req.body.email], (err, result) => {
+    newCon.query(sql, [req.body.email], (err, result) => {
       if (err) {
         res.json({ error: err.message });
       }
@@ -54,12 +55,11 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
         res.json({ status: "Wrong Email" });
       }
     });
-    con.end();
   });
 });
 
 userRoute.get("/", async (req, res) => {
-  con.connect((err) => {
+  newCon.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -67,13 +67,13 @@ userRoute.get("/", async (req, res) => {
 
     let sql = "SELECT * FROM users";
 
-    con.query(sql, (err, result) => {
+    newCon.query(sql, (err, result) => {
       if (err) {
         res.json({ error: err.message });
+      } else {
+        res.json({ status: "Success", data: result });
       }
-      res.json({ status: "Success", data: result });
     });
-    con.end();
   });
 });
 

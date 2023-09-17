@@ -8,4 +8,11 @@ const con = mysql.createConnection({
   database: "restaurant_backend",
 });
 
-module.exports = con;
+const newCon = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "restaurant_backend",
+});
+
+module.exports = newCon;
