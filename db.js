@@ -2,7 +2,7 @@ const mysql = require("mysql");
 
 const newCon = mysql.createConnection({
   connectionLimit: 10,
-  host: "localhost",
+  host: "https://cautious-red-flannel-nightgown.cyclic.cloud",
   user: "root",
   password: "",
   database: "restaurant_backend",
