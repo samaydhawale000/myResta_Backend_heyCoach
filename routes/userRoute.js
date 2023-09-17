@@ -27,6 +27,13 @@ userRoute.post("/", userMiddleware, (req, res) => {
         }
       }
     );
+    newCon.end((err) => {
+      if (err) {
+        console.error("Error closing the database connection:", err);
+      } else {
+        console.log("Connection closed");
+      }
+    });
   });
 });
 
@@ -54,6 +61,13 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
         res.json({ status: "Wrong Email" });
       }
     });
+    newCon.end((err) => {
+      if (err) {
+        console.error("Error closing the database connection:", err);
+      } else {
+        console.log("Connection closed");
+      }
+    });
   });
 });
 
@@ -71,6 +85,13 @@ userRoute.get("/", async (req, res) => {
         res.json({ error: err.message });
       } else {
         res.json({ status: "Success", data: result });
+      }
+    });
+    newCon.end((err) => {
+      if (err) {
+        console.error("Error closing the database connection:", err);
+      } else {
+        console.log("Connection closed");
       }
     });
   });
