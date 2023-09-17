@@ -1,5 +1,10 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
-const dbConnect = mongoose.connect(process.env.DATABASE_URl);
+const mysql = require("mysql");
 
-module.exports = dbConnect;
+const con = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "restaurant_backend",
+});
+
+module.exports = con;

@@ -6,41 +6,72 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const loginMiddleware = require("../middleware/loginMiddleware");
+const con = require("../db");
 
-userRoute.post("/", userMiddleware, async (req, res) => {
-  try {
-    bcrypt.hash(req.body.password, 5, async (err, hash) => {
-      if (hash) {
-        await userModel.create({ ...req.body, password: hash });
-        res.status(201).json({ status: "Success", data: req.body });
-      } else {
-        res.send(err.message);
+userRoute.post("/", userMiddleware, (req, res) => {
+  con.connect((err) => {
+    if (err) {
+      con.log("error from DB connection", err);
+    }
+    console.log("DB connected");
+
+    let sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    con.query(
+      sql,
+      [req.body.username, req.body.email, req.body.password],
+      (err, result) => {
+        if (err) {
+          res.json({ error: err.message });
+        }
+        res.json({ status: "Success", data: "User Register successfully" });
       }
-    });
-  } catch (err) {
-    res.json({ error: err.message });
-  }
+    );
+  });
 });
 
-userRoute.post("/login", loginMiddleware, async (req, res) => {
-  try {
-    const data = await userModel.findOne({ email: req.body.email });
-    if (data.email) {
-      bcrypt.compare(req.body.password, data.password, function (err, result) {
-        console.log(data.password);
-        if (result) {
-          var token = jwt.sign({ userID: data._id }, "shhhhh");
-          res.json({ status: "Success", token: token });
+userRoute.post("/login", loginMiddleware, (req, res) => {
+  con.connect((err) => {
+    if (err) {
+      console.log("error from DB connection", err);
+    }
+    console.log("DB connected");
+
+    let sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
+
+    con.query(sql, [req.body.email], (err, result) => {
+      if (err) {
+        res.json({ error: err.message });
+      }
+      console.log(result);
+      if (result.length > 0) {
+        if (result[0].password == req.body.password) {
+          res.json({ status: "Success" });
         } else {
           res.json({ status: "Wrong Password" });
         }
-      });
-    } else {
-      res.json({ status: "Wrong Email" });
+      } else {
+        res.json({ status: "Wrong Information" });
+      }
+    });
+  });
+});
+
+userRoute.get("/", async (req, res) => {
+  con.connect((err) => {
+    if (err) {
+      console.log("error from DB connection", err);
     }
-  } catch (err) {
-    res.json({ status: "failed", message: err.message });
-  }
+    console.log("DB connected");
+
+    let sql = "SELECT * FROM users";
+
+    con.query(sql, (err, result) => {
+      if (err) {
+        res.json({ error: err.message });
+      }
+      res.json({ status: "Success", data: result });
+    });
+  });
 });
 
 module.exports = userRoute;
