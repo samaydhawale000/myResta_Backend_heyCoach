@@ -1,10 +1,10 @@
 const mysql = require("mysql");
 
-const pool = mysql.createPool({
+const con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "restaurant_backend",
 });
 
-module.exports = pool;
+module.exports = con;

@@ -6,21 +6,20 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
 const loginMiddleware = require("../middleware/loginMiddleware");
-const pool = require("../db");
+const con = require("../db");
 
 userRoute.post("/", userMiddleware, (req, res) => {
-  pool.getConnection((err, connection) => {
+  con.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
     console.log("DB connected");
 
     let sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
-    connection.query(
+    con.query(
       sql,
       [req.body.username, req.body.email, req.body.password],
       (err, result) => {
-        connection.release();
         if (err) {
           res.json({ error: err.message });
         }
@@ -31,7 +30,7 @@ userRoute.post("/", userMiddleware, (req, res) => {
 });
 
 userRoute.post("/login", loginMiddleware, (req, res) => {
-  pool.getConnection((err, connection) => {
+  con.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -39,8 +38,7 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
 
     let sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
 
-    connection.query(sql, [req.body.email], (err, result) => {
-      connection.release();
+    con.query(sql, [req.body.email], (err, result) => {
       if (err) {
         res.json({ error: err.message });
       }
@@ -59,7 +57,7 @@ userRoute.post("/login", loginMiddleware, (req, res) => {
 });
 
 userRoute.get("/", async (req, res) => {
-  pool.getConnection((err, connection) => {
+  con.connect((err) => {
     if (err) {
       console.log("error from DB connection", err);
     }
@@ -67,9 +65,7 @@ userRoute.get("/", async (req, res) => {
 
     let sql = "SELECT * FROM users";
 
-    connection.query(sql, (err, result) => {
-      connection.release();
-
+    con.query(sql, (err, result) => {
       if (err) {
         res.json({ error: err.message });
       }
