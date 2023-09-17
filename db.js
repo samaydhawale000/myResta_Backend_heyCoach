@@ -5,7 +5,7 @@ const newCon = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "restaurant_backend",
+  database: "resta_heycoach_backend",
 });
 
 module.exports = newCon;
